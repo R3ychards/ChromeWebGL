@@ -2,28 +2,15 @@
 <head>
 <script>
 
-var arr1 = [0,1];
-
-function ObjCreate(make) {
-  this.make = make;
-}
-
-var obj1 = new ObjCreate();
-
 function main() {
 
-	arr1.reduce(f3); 
+var ar = [];
 
-	Object.getOwnPropertyDescriptors(Array(99).join(obj1.make));
-
+	for(let i = 0; i < 0x20000000; ++i){
+		ar[i]=i;
+	} 
 }
-
-function f3() {
-
-	obj1["make"] = RegExp(Array(60000).join("CCC")); 
-}
-
 </script>
 </head>
 <body onload=main()></body>
-</html>
+</html>          
